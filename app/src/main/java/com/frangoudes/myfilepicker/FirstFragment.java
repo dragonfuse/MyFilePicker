@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -63,7 +64,7 @@ public class FirstFragment extends Fragment {
 
         try {
             startActivityForResult(
-                    Intent.createChooser(intent, "Select a File to Upload"),
+                    Intent.createChooser(intent, getResources().getString(R.string.file_list_string)),
                     FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
             // Direct the user to the Market with a Dialog
@@ -74,22 +75,45 @@ public class FirstFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_SELECT_CODE) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
+            if (data.getData() != null) {
                 // Add the Uri of the selected file to the list
                 uriList.add(data.getData());
+            } else {
+                if (data.getClipData() != null) {
+                    // multiple files selected
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        uriList.add(data.getClipData().getItemAt(i).getUri());
+                    }
+                    Collections.sort(uriList);
+                }
             }
+            // displayFileListPath();
             displayFileList();
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void displayFileListPath(){
+        TextView tvFileList = (TextView) getView().findViewById(R.id.file_list);
+        tvFileList.setMovementMethod(new ScrollingMovementMethod());
+        tvFileList.setText(null);
+        if (!uriList.isEmpty()) {
+            tvFileList.setText(uriList.toString());
+        }
     }
 
     private void displayFileList(){
         TextView tvFileList = (TextView) getView().findViewById(R.id.file_list);
         tvFileList.setMovementMethod(new ScrollingMovementMethod());
         tvFileList.setText(null);
-        if (!uriList.isEmpty()) {
-            tvFileList.setText(uriList.toString());
+        if (uriList.isEmpty()) {
+            tvFileList.setText(getResources().getString(R.string.file_list_string));
+        } else {
+            for (int i = uriList.size() -1; i >=0; i--) {
+                uri = uriList.get(i);
+                tvFileList.append("\n" + (uriList.get(i)).getPath());
+            }
         }
     }
 }
