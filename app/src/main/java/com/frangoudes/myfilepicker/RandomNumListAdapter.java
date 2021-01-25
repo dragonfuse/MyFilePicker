@@ -3,14 +3,28 @@ package com.frangoudes.myfilepicker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Random;
 
-public class RandomNumListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+public class RandomNumListAdapter extends RecyclerView.Adapter<RandomNumListAdapter.RecyclerViewHolder> {
     private Random random;
+
+    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView view;
+        public RecyclerViewHolder(@NonNull View itemView) {
+            super(itemView);
+            view = itemView.findViewById(R.id.randomText);
+        }
+
+        public TextView getView(){
+            return view;
+        }
+    }
 
     public RandomNumListAdapter(int seed) {
         this.random = new Random(seed);
