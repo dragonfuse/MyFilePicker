@@ -27,7 +27,6 @@ public class FirstFragment extends Fragment {
     private static final int FILE_SELECT_CODE = 77;
 
     List<Uri> uriList = new ArrayList<>();
-    List<String> trackList = new ArrayList<>();
 
     @Override
     public View onCreateView(

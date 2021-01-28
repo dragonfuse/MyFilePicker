@@ -10,4 +10,7 @@
     <string name="file_list_string">Select a File</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="select_button_string">Select</string>
+    <string name="second_fragment">Second Fragment</string>
+    <string name="third_fragment">Third Fragment</string>
+    <string name="button_third">Back</string>
 </resources>

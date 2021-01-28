@@ -27,7 +27,7 @@ public class RandomNumListAdapter extends RecyclerView.Adapter<RandomNumListAdap
     }
 
     public RandomNumListAdapter(int seed) {
-        this.random = new Random(seed);
+        this.random = new Random();
     }
 
     @Override
