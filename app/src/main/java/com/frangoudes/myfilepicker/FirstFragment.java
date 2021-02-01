@@ -15,6 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +27,16 @@ import static android.app.Activity.RESULT_OK;
 
 public class FirstFragment extends Fragment {
 
+    // Todo Fix loss of data on Orientation Change
+    // Todo Add functionality to rearrange RecyclerView Items
+
     private static final int FILE_SELECT_CODE = 77;
 
     List<Uri> uriList = new ArrayList<>();
+    List<String> fileList = new ArrayList<>();
+
+    private RecyclerView fileListRV;
+    FileListAdapter fileListAdapter = new FileListAdapter(fileList);
 
     @Override
     public View onCreateView(
@@ -39,6 +49,15 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        fileListRV = view.findViewById(R.id.file_list_rv);
+        fileListRV.setHasFixedSize(true);
+        fileListRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        // FileListAdapter fileListAdapter = new FileListAdapter(fileList);
+        //  fileListAdapter.notifyDataSetChanged();
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(fileListRV);
+        fileListRV.setAdapter(fileListAdapter);
+
 
         view.findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,19 +77,32 @@ public class FirstFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        List<Uri> localUriList = new ArrayList<>();
+        List<String> localFileList = new ArrayList<>();
+        Uri uri;
+
         if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
             if (data.getData() != null) {
                 // Add the Uri of the selected file to the list
-                uriList.add(data.getData());
+                uri = data.getData();
+                uriList.add(uri);
+                fileList.add(getFileName(uri));
             } else {
                 if (data.getClipData() != null) {
                     // multiple files selected
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                        uriList.add(data.getClipData().getItemAt(i).getUri());
+                        uri = data.getClipData().getItemAt(i).getUri();
+                        localUriList.add(uri);
+                        localFileList.add(getFileName(uri));
                     }
-                    Collections.sort(uriList);
+                    Collections.sort(localUriList);
+                    uriList.addAll(localUriList);
+                    Collections.sort(localFileList);
+                    fileList.addAll(localFileList);
                 }
             }
+            fileListAdapter.notifyDataSetChanged();
             // displayFileListPath();
             displayFileList();
         }
@@ -137,4 +169,22 @@ public class FirstFragment extends Fragment {
         }
         return result;
     }
+
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            fileList.remove(position);
+            uriList.remove(position);
+            fileListAdapter.notifyDataSetChanged();
+        }
+    };
+
+    
+
 }

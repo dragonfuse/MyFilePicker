@@ -15,6 +15,8 @@ public class SecondFragment extends Fragment {
 
     // Add RecyclerView member
     private RecyclerView recyclerView;
+    RandomNumListAdapter randomListAdapter = new RandomNumListAdapter(1234);
+
 
     @Override
     public View onCreateView(
@@ -44,7 +46,7 @@ public class SecondFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        RandomNumListAdapter randomListAdapter = new RandomNumListAdapter(1234);
+       // RandomNumListAdapter randomListAdapter = new RandomNumListAdapter(1234);
       //  randomListAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(randomListAdapter);
 
